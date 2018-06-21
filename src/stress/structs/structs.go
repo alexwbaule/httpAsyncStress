@@ -6,6 +6,10 @@ import (
 )
 
 type RequestData struct {
+    Query  []struct {
+		Name string `json:"name"`
+		Values []string `json:"values"`
+	}`json:"query"`
     Headers  []struct {
 		Name string `json:"name"`
 		Value string `json:"value"`

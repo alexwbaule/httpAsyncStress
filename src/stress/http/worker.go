@@ -34,6 +34,8 @@ func WorkerAsyncHttpGets(workers int, runtimes int, httptimeout time.Duration, e
 
 	httpData := config.GetFile(file)
 
+	fmt.Printf("HTTPData=%v\n", httpData )
+
 	var findregex = regexp.MustCompile(httpData.Grep)
 
 	startTime := time.Now()
@@ -138,11 +140,12 @@ func worker (worker int, jobs <-chan structs.HttpRequest, results chan<- structs
 
 	for item := range jobs {
 		start := time.Now();
-		fullUrl :=  item.HttpData.Url
+		fullUrl :=  config.DoQueryString(item.HttpData)
 		body, city := config.DoBody(item.HttpData)
 		client := &http.Client{
 		    Timeout: item.HttpTimeout,
 		}
+		fmt.Printf("-- URL=%s\n", fullUrl )
 		req, err := http.NewRequest(item.HttpData.Type, fullUrl, bytes.NewBuffer([]byte(body)))
 		if err != nil {
 		    fmt.Println(err)

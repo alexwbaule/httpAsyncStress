@@ -10,6 +10,7 @@ import (
 	"encoding/json"
 	"strings"
 	"strconv"
+	"bytes"
 )
 
 func DoBody(conf structs.RequestData) (string, structs.SoapData) {
@@ -35,6 +36,31 @@ func DoBody(conf structs.RequestData) (string, structs.SoapData) {
 	}
     return body, soap
 }
+
+
+func DoQueryString(conf structs.RequestData) (string) {
+    var buffer bytes.Buffer
+	r := rand.New(rand.NewSource(time.Now().UnixNano()))
+	url := conf.Url
+	buffer.WriteString(url)
+	if (len(conf.Query) > 0){
+		buffer.WriteString("?")
+	}
+
+	for i := range conf.Query {
+		if (i > 1){
+			buffer.WriteString("&")
+		}
+		v := r.Intn(len(conf.Query[i].Values))
+		j := conf.Query[i].Values[v]
+		buffer.WriteString(conf.Query[i].Name)
+		buffer.WriteString("=")
+		buffer.WriteString(j)
+	}
+    return buffer.String()
+}
+
+
 
 func GetFile(file string) structs.RequestData {
     raw, err := ioutil.ReadFile(file)
