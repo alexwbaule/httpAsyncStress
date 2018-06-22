@@ -34,8 +34,6 @@ func WorkerAsyncHttpGets(workers int, runtimes int, httptimeout time.Duration, e
 
 	httpData := config.GetFile(file)
 
-	fmt.Printf("HTTPData=%v\n", httpData )
-
 	var findregex = regexp.MustCompile(httpData.Grep)
 
 	startTime := time.Now()
@@ -65,7 +63,7 @@ func WorkerAsyncHttpGets(workers int, runtimes int, httptimeout time.Duration, e
 				bodyString = string(bodyBytes)
 				found = findregex.MatchString(bodyString)
 			}
-			fmt.Printf("Count=%d -- Worker=%d -- Status=%s ", r.Count, r.Worker, r.Response.Status)
+			fmt.Printf("Count=%d -- Worker=%d -- Status=%s -- QueryString=[%s] ", r.Count, r.Worker, r.Response.Status, r.Response.Request.URL.RawQuery)
 			for v := range r.Soap.Rpl {
 				fmt.Printf("-- %s=%s ", r.Soap.Rpl[v].Key, r.Soap.Rpl[v].Value)
 			}
@@ -84,7 +82,11 @@ func WorkerAsyncHttpGets(workers int, runtimes int, httptimeout time.Duration, e
 			biggest = int64(math.Max(float64(biggest),float64(r.Tget)))
 			minor	= int64(math.Min(float64(minor),float64(r.Tget)))
 			middle += int64(r.Tget)
-			dones++
+			if (r.Response.StatusCode == 200) {
+				dones++
+			}else{
+				errors++
+			}
 			if(found){
 				found_dones++
 			}else{
@@ -145,7 +147,12 @@ func worker (worker int, jobs <-chan structs.HttpRequest, results chan<- structs
 		client := &http.Client{
 		    Timeout: item.HttpTimeout,
 		}
-		fmt.Printf("-- URL=%s\n", fullUrl )
+		tr := &http.Transport{
+			MaxIdleConns:       100,
+			MaxIdleConnsPerHost:  100,
+		}
+		client = &http.Client{Transport: tr}
+
 		req, err := http.NewRequest(item.HttpData.Type, fullUrl, bytes.NewBuffer([]byte(body)))
 		if err != nil {
 		    fmt.Println(err)

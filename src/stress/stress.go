@@ -8,6 +8,8 @@ import (
 	"strings"
 	"os"
 	"os/signal"
+	"syscall"
+	"math"
 )
 /*
 # Testes Sem parar
@@ -37,6 +39,20 @@ func init() {
 
 func main() {
 	flag.Parse()
+
+    var rLimit syscall.Rlimit
+    rLimit.Max = math.MaxUint64
+    rLimit.Cur = math.MaxUint64
+    err := syscall.Setrlimit(syscall.RLIMIT_NOFILE, &rLimit)
+    if err != nil {
+        fmt.Println("Error Setting Rlimit ", err)
+    }
+    err = syscall.Getrlimit(syscall.RLIMIT_NOFILE, &rLimit)
+    if err != nil {
+        fmt.Println("Error Setting Rlimit ", err)
+    }
+	fmt.Printf("Limits %v\n", rLimit)
+
 	summary	:= make(chan bool)
 	sig		:= make(chan os.Signal, 1)
 

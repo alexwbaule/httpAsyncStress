@@ -48,7 +48,7 @@ func DoQueryString(conf structs.RequestData) (string) {
 	}
 
 	for i := range conf.Query {
-		if (i > 1){
+		if (i >= 1){
 			buffer.WriteString("&")
 		}
 		v := r.Intn(len(conf.Query[i].Values))
