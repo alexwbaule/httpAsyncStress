@@ -1,4 +1,3 @@
-export GOPATH=${PWD}
 
 PACKAGE:=stress
 OUTPUT:=stress
@@ -19,7 +18,7 @@ mac: GOARCH=amd64
 mac: build
 
 build:
-	mkdir -p ${GOPATH}/bin/${GOOS}/${GOARCH}
-	GOOS=$(GOOS) GOARCH=$(GOARCH) go build -o ${GOPATH}/bin/${GOOS}/${GOARCH}/$(OUTPUT) $(PACKAGE)
-	cp -f ${GOPATH}/bin/${GOOS}/${GOARCH}/$(OUTPUT) $(PACKAGE)
+	mkdir -p bin/${GOOS}/${GOARCH}
+	GOOS=$(GOOS) GOARCH=$(GOARCH) go build -o bin/${GOOS}/${GOARCH}/$(OUTPUT) $(PACKAGE).go
+	cp -f bin/${GOOS}/${GOARCH}/$(OUTPUT) $(PACKAGE)
 	chmod 755 $(PACKAGE)
